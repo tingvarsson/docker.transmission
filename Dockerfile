@@ -11,7 +11,6 @@ VOLUME /config
 # Update packages and install software
 RUN apt-get update \
     && apt-get -y install software-properties-common \
-    && add-apt-repository ppa:transmissionbt/ppa \
     && apt-get update \
     && apt-get install -y transmission-cli transmission-common transmission-daemon curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
