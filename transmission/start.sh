@@ -18,6 +18,6 @@ if [ ! -e "/dev/random" ]; then
 fi
 
 echo "STARTING TRANSMISSION"
-exec /usr/bin/transmission-daemon -g ${TRANSMISSION_HOME} --logfile ${TRANSMISSION_HOME}/transmission.log &
+exec /usr/bin/transmission-daemon -f -g ${TRANSMISSION_HOME} --logfile ${TRANSMISSION_HOME}/transmission.log --log-info
 
 echo "Transmission startup script complete."
