@@ -1,9 +1,0 @@
-transmission:
-  image: tingvarsson/transmission
-  privileged: true
-  ports:
-    - "9091:9091"
-  volumes:
-    - /etc/localtime:/etc/localtime:ro
-    - /your/storage/path/:/data
-  environment:

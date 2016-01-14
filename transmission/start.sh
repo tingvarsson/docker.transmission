@@ -1,11 +1,5 @@
 #!/bin/sh
 
-# Persist transmission settings for use by transmission-daemon
-dockerize -template /etc/transmission/environment-variables.tmpl:/etc/transmission/environment-variables.sh /bin/true
-
-# Source our persisted env variables from container startup
-. /etc/transmission/environment-variables.sh
-
 echo "Generating transmission settings.json from env variables"
 # Ensure TRANSMISSION_HOME is created
 mkdir -p ${TRANSMISSION_HOME}
