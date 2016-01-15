@@ -13,9 +13,6 @@ RUN apt-get update \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && curl -L https://github.com/jwilder/dockerize/releases/download/v0.0.2/dockerize-linux-amd64-v0.0.2.tar.gz | tar -C /usr/local/bin -xzv
 
-# TODO: explain why we need this again, or what it's good for at least
-RUN rm /dev/random && ln -s /dev/urandom /dev/random
-
 # Prepare default directories
 RUN bash -c 'mkdir -p /{completed,incomplete,config,log,watch,template}'
 
