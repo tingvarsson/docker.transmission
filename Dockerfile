@@ -99,7 +99,8 @@ ENV "TRANSMISSION_ALT_SPEED_DOWN=50" \
     "TRANSMISSION_UPLOAD_SLOTS_PER_TORRENT=14" \
     "TRANSMISSION_UTP_ENABLED=true" \
     "TRANSMISSION_WATCH_DIR=/watch" \
-    "TRANSMISSION_WATCH_DIR_ENABLED=true"
+    "TRANSMISSION_WATCH_DIR_ENABLED=true" \
+    "TRANSMISSION_HOME=/config"
 
 # Expose port for web gui
 EXPOSE 9091
@@ -108,5 +109,4 @@ EXPOSE 9091
 ENTRYPOINT ["dockerize", \
             "-template=/template/settings.tmpl:/config/settings.json", \
             "/usr/bin/transmission-daemon", \
-            "-f", \
-            "-g /config"]
+            "-f"]
