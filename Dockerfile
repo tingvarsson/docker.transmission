@@ -19,7 +19,7 @@ RUN apt-get update \
 RUN rm /dev/random && ln -s /dev/urandom /dev/random
 
 # Add configuration and scripts
-ADD settings.json /var/lib/transmission-daemon/settings.tmpl
+ADD settings.tmpl /var/lib/transmission-daemon/settings.tmpl
 
 ENV "TRANSMISSION_ALT_SPEED_DOWN=50" \
     "TRANSMISSION_ALT_SPEED_ENABLED=false" \
@@ -97,11 +97,11 @@ ENV "TRANSMISSION_ALT_SPEED_DOWN=50" \
 # Expose port for web gui
 EXPOSE 9091
 
-# Default entry point dockerized transmission-daemon
-ENTRYPOINT ["dockerize",
-            "-template /var/lib/transmission-daemon/settings.tmpl:/var/lib/transmission-daemon/settings.json",
-	    "-stdout /data/log",
-	    "/usr/bin/transmission-daemon -f --logfile /data/log --log-info"]
+# Default entry point dockerized transmission-daemon, -f to make the daemon non-daemonized :)
+ENTRYPOINT ["dockerize", \
+            "-template=/var/lib/transmission-daemon/settings.tmpl:/var/lib/transmission-daemon/settings.json", \
+	    "/usr/bin/transmission-daemon", \
+	    "-f"]
 
 # Default non-parameterized call goes to help
 CMD ["--help"]
