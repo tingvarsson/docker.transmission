@@ -3,7 +3,7 @@
 # Version 1.0
 
 FROM ubuntu:15.10
-MAINTAINER Thomas Ingvarsson
+MAINTAINER Thomas Ingvarsson <ingvarsson.thomas@gmail.com>
 
 # Update packages and install software
 RUN apt-get update \
@@ -99,8 +99,9 @@ ENV "TRANSMISSION_ALT_SPEED_DOWN=50" \
     "TRANSMISSION_WATCH_DIR_ENABLED=true" \
     "TRANSMISSION_HOME=/config"
 
-# Expose port for web gui
-EXPOSE 9091
+# Expose PEER and RPC ports
+EXPOSE $TRANSMISSION_PEER_PORT
+EXPOSE $TRANSMISSION_RPC_PORT
 
 # Default entry point dockerized transmission-daemon, -f to make the daemon non-daemonized :)
 ENTRYPOINT ["dockerize", \
