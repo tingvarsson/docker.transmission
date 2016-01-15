@@ -5,8 +5,6 @@
 FROM ubuntu:15.10
 MAINTAINER Thomas Ingvarsson
 
-VOLUME /data
-
 # Update packages and install software
 RUN apt-get update \
     && apt-get -y install software-properties-common \
@@ -18,8 +16,18 @@ RUN apt-get update \
 # TODO: explain why we need this again, or what it's good for at least
 RUN rm /dev/random && ln -s /dev/urandom /dev/random
 
-# Add configuration and scripts
-ADD settings.tmpl /var/lib/transmission-daemon/settings.tmpl
+# Prepare default directories
+RUN bash -c 'mkdir -p /{completed,incomplete,config,log,watch,template}'
+
+# Add settings template to image
+ADD settings.tmpl /template/settings.tmpl
+
+# Volumize directories for user configurability
+VOLUME /completed
+VOLUME /incomplete
+VOLUME /config
+VOLUME /log
+VOLUME /watch
 
 ENV "TRANSMISSION_ALT_SPEED_DOWN=50" \
     "TRANSMISSION_ALT_SPEED_ENABLED=false" \
@@ -34,7 +42,7 @@ ENV "TRANSMISSION_ALT_SPEED_DOWN=50" \
     "TRANSMISSION_BLOCKLIST_URL=http://www.example.com/blocklist" \
     "TRANSMISSION_CACHE_SIZE_MB=4" \
     "TRANSMISSION_DHT_ENABLED=true" \
-    "TRANSMISSION_DOWNLOAD_DIR=/data/completed" \
+    "TRANSMISSION_DOWNLOAD_DIR=/completed" \
     "TRANSMISSION_DOWNLOAD_LIMIT=100" \
     "TRANSMISSION_DOWNLOAD_LIMIT_ENABLED=0" \
     "TRANSMISSION_DOWNLOAD_QUEUE_ENABLED=true" \
@@ -42,7 +50,7 @@ ENV "TRANSMISSION_ALT_SPEED_DOWN=50" \
     "TRANSMISSION_ENCRYPTION=1" \
     "TRANSMISSION_IDLE_SEEDING_LIMIT=30" \
     "TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=false" \
-    "TRANSMISSION_INCOMPLETE_DIR=/data/incomplete" \
+    "TRANSMISSION_INCOMPLETE_DIR=/incomplete" \
     "TRANSMISSION_INCOMPLETE_DIR_ENABLED=true" \
     "TRANSMISSION_LPD_ENABLED=false" \
     "TRANSMISSION_MAX_PEERS_GLOBAL=200" \
@@ -73,7 +81,7 @@ ENV "TRANSMISSION_ALT_SPEED_DOWN=50" \
     "TRANSMISSION_RPC_URL=/transmission/" \
     "TRANSMISSION_RPC_USERNAME=username" \
     "TRANSMISSION_RPC_WHITELIST=127.0.0.1" \
-    "TRANSMISSION_RPC_WHITELIST_ENABLED=false" \
+    "TRANSMISSION_RPC_WHITELIST_ENABLED=true" \
     "TRANSMISSION_SCRAPE_PAUSED_TORRENTS_ENABLED=true" \
     "TRANSMISSION_SCRIPT_TORRENT_DONE_ENABLED=false" \
     "TRANSMISSION_SCRIPT_TORRENT_DONE_FILENAME=" \
@@ -90,18 +98,15 @@ ENV "TRANSMISSION_ALT_SPEED_DOWN=50" \
     "TRANSMISSION_UPLOAD_LIMIT_ENABLED=0" \
     "TRANSMISSION_UPLOAD_SLOTS_PER_TORRENT=14" \
     "TRANSMISSION_UTP_ENABLED=true" \
-    "TRANSMISSION_WATCH_DIR=/data/watch" \
-    "TRANSMISSION_WATCH_DIR_ENABLED=true" \
-    "TRANSMISSION_HOME=/data/transmission-home"
+    "TRANSMISSION_WATCH_DIR=/watch" \
+    "TRANSMISSION_WATCH_DIR_ENABLED=true"
 
 # Expose port for web gui
 EXPOSE 9091
 
 # Default entry point dockerized transmission-daemon, -f to make the daemon non-daemonized :)
 ENTRYPOINT ["dockerize", \
-            "-template=/var/lib/transmission-daemon/settings.tmpl:/var/lib/transmission-daemon/settings.json", \
-	    "/usr/bin/transmission-daemon", \
-	    "-f"]
-
-# Default non-parameterized call goes to help
-CMD ["--help"]
+            "-template=/template/settings.tmpl:/config/settings.json", \
+            "/usr/bin/transmission-daemon", \
+            "-f", \
+            "-g /config"]
