@@ -6,7 +6,6 @@ FROM ubuntu:15.10
 MAINTAINER Thomas Ingvarsson
 
 VOLUME /data
-VOLUME /config
 
 # Update packages and install software
 RUN apt-get update \
@@ -16,10 +15,11 @@ RUN apt-get update \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && curl -L https://github.com/jwilder/dockerize/releases/download/v0.0.2/dockerize-linux-amd64-v0.0.2.tar.gz | tar -C /usr/local/bin -xzv
 
+# TODO: explain why we need this again, or what it's good for at least
 RUN rm /dev/random && ln -s /dev/urandom /dev/random
 
 # Add configuration and scripts
-ADD transmission/ /etc/transmission/
+ADD settings.json /var/lib/transmission-daemon/settings.tmpl
 
 ENV "TRANSMISSION_ALT_SPEED_DOWN=50" \
     "TRANSMISSION_ALT_SPEED_ENABLED=false" \
@@ -94,6 +94,14 @@ ENV "TRANSMISSION_ALT_SPEED_DOWN=50" \
     "TRANSMISSION_WATCH_DIR_ENABLED=true" \
     "TRANSMISSION_HOME=/data/transmission-home"
 
-# Expose port and run
+# Expose port for web gui
 EXPOSE 9091
-CMD ["/etc/transmission/start.sh"]
+
+# Default entry point dockerized transmission-daemon
+ENTRYPOINT ["dockerize",
+            "-template /var/lib/transmission-daemon/settings.tmpl:/var/lib/transmission-daemon/settings.json",
+	    "-stdout /data/log",
+	    "/usr/bin/transmission-daemon -f --logfile /data/log --log-info"]
+
+# Default non-parameterized call goes to help
+CMD ["--help"]
