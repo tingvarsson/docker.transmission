@@ -1,22 +1,14 @@
 # Transmission
 #
-# Version 1.0.0
+# Version 2.0.0
 
-FROM ubuntu:15.10
+FROM alpine:3.3
 MAINTAINER Thomas Ingvarsson <ingvarsson.thomas@gmail.com>
 
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
-
-RUN apt-get update \
-    && apt-get install -y transmission-cli transmission-common transmission-daemon curl \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && curl -L https://github.com/jwilder/dockerize/releases/download/v0.0.2/dockerize-linux-amd64-v0.0.2.tar.gz | tar -C /usr/local/bin -xzv
-
-# Prepare default directories
-RUN bash -c 'mkdir -p /{completed,incomplete,config,log,watch,template}'
+RUN apk add --no-cache transmission-daemon && \
+    apk add --no-cache --virtual=build-dependencies bash curl tar && \
+    curl -L https://github.com/jwilder/dockerize/releases/download/v0.0.2/dockerize-linux-amd64-v0.0.2.tar.gz | tar -C /usr/local/bin -xzv && \
+    bash -c 'mkdir -p /{completed,incomplete,config,log,watch,template}'
 
 # Add settings template to image
 ADD settings.tmpl /template/settings.tmpl
