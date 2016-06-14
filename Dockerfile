@@ -2,7 +2,7 @@
 #
 # Version 2.0.0
 
-FROM alpine:3.3
+FROM alpine:3.4
 MAINTAINER Thomas Ingvarsson <ingvarsson.thomas@gmail.com>
 
 RUN apk add --no-cache transmission-daemon && \
