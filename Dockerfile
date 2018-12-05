@@ -3,7 +3,7 @@
 # Version latest
 
 FROM alpine:latest
-MAINTAINER Thomas Ingvarsson <ingvarsson.thomas@gmail.com>
+LABEL maintainer Thomas Ingvarsson <ingvarsson.thomas@gmail.com>
 
 RUN apk add --no-cache transmission-daemon && \
     apk add --no-cache --virtual=build-dependencies bash curl tar && \
