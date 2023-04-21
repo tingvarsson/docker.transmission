@@ -1,4 +1,4 @@
-FROM alpine:3.17
+FROM alpine:edge
 LABEL maintainer Thomas Ingvarsson <ingvarsson.thomas@gmail.com>
 
 RUN apk add --no-cache transmission-daemon
